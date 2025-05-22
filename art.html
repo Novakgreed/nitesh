@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Art Portfolio</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>tailwind.config={theme:{extend:{colors:{primary:'#D5E8E3',secondary:'#E8D5D5'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+<style>
+:where([class^="ri-"])::before { content: "\f3c2"; }
+body {
+font-family: 'Poppins', sans-serif;
+background-color: #FDFBF7;
+color: #333;
+}
+.gallery-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+gap: 1.5rem;
+}
+.gallery-item {
+position: relative;
+overflow: hidden;
+border-radius: 8px;
+transition: transform 0.3s ease;
+}
+.gallery-item:hover {
+transform: scale(1.02);
+}
+.gallery-overlay {
+position: absolute;
+bottom: 0;
+left: 0;
+right: 0;
+background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+padding: 1rem;
+opacity: 0;
+transition: opacity 0.3s ease;
+}
+.gallery-item:hover .gallery-overlay {
+opacity: 1;
+}
+.modal {
+display: none;
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(0,0,0,0.9);
+z-index: 50;
+justify-content: center;
+align-items: center;
+}
+.modal-content {
+max-width: 90%;
+max-height: 90%;
+}
+.modal-close {
+position: absolute;
+top: 20px;
+right: 20px;
+color: white;
+font-size: 30px;
+cursor: pointer;
+}
+input[type="text"],
+input[type="email"],
+textarea {
+width: 100%;
+padding: 0.75rem;
+border: 1px solid #e2e8f0;
+border-radius: 8px;
+outline: none;
+transition: border-color 0.3s;
+}
+input[type="text"]:focus,
+input[type="email"]:focus,
+textarea:focus {
+border-color: #D5E8E3;
+box-shadow: 0 0 0 3px rgba(213, 232, 227, 0.3);
+}
+.custom-checkbox {
+position: relative;
+padding-left: 30px;
+cursor: pointer;
+user-select: none;
+}
+.custom-checkbox input {
+position: absolute;
+opacity: 0;
+cursor: pointer;
+height: 0;
+width: 0;
+}
+.checkmark {
+position: absolute;
+top: 0;
+left: 0;
+height: 20px;
+width: 20px;
+background-color: #fff;
+border: 1px solid #ccc;
+border-radius: 4px;
+}
+.custom-checkbox:hover input ~ .checkmark {
+background-color: #f0f0f0;
+}
+.custom-checkbox input:checked ~ .checkmark {
+background-color: #D5E8E3;
+border-color: #D5E8E3;
+}
+.checkmark:after {
+content: "";
+position: absolute;
+display: none;
+}
+.custom-checkbox input:checked ~ .checkmark:after {
+display: block;
+left: 7px;
+top: 3px;
+width: 6px;
+height: 11px;
+border: solid white;
+border-width: 0 2px 2px 0;
+transform: rotate(45deg);
+}
+.fade-in {
+opacity: 0;
+transform: translateY(20px);
+transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.fade-in.visible {
+opacity: 1;
+transform: translateY(0);
+}
+</style>
+</head>
+<body>
+<!-- Header -->
+<header class="fixed w-full bg-white shadow-sm z-40">
+<div class="container mx-auto px-4 py-4 flex justify-between items-center">
+<a href="#" class="text-2xl font-['Pacifico'] text-gray-800">logo</a>
+<!-- Desktop Navigation -->
+<nav class="hidden md:flex space-x-8">
+<a href="#home" class="text-gray-800 hover:text-primary font-medium transition-colors">Home</a>
+<a href="#gallery" class="text-gray-800 hover:text-primary font-medium transition-colors">Gallery</a>
+<a href="#about" class="text-gray-800 hover:text-primary font-medium transition-colors">About</a>
+<a href="#contact" class="text-gray-800 hover:text-primary font-medium transition-colors">Contact</a>
+</nav>
+<!-- Mobile Navigation Toggle -->
+<div class="md:hidden w-8 h-8 flex items-center justify-center">
+<button id="menu-toggle" class="text-gray-800 focus:outline-none">
+<i class="ri-menu-line ri-lg"></i>
+</button>
+</div>
+</div>
+<!-- Mobile Navigation Menu -->
+<div id="mobile-menu" class="hidden md:hidden bg-white w-full shadow-md">
+<div class="container mx-auto px-4 py-2 flex flex-col space-y-3">
+<a href="#home" class="text-gray-800 py-2 hover:text-primary font-medium transition-colors">Home</a>
+<a href="#gallery" class="text-gray-800 py-2 hover:text-primary font-medium transition-colors">Gallery</a>
+<a href="#about" class="text-gray-800 py-2 hover:text-primary font-medium transition-colors">About</a>
+<a href="#contact" class="text-gray-800 py-2 hover:text-primary font-medium transition-colors">Contact</a>
+</div>
+</div>
+</header>
+<!-- Home Section -->
+<section id="home" class="pt-24 pb-16">
+<!-- Hero Section -->
+<div class="relative w-full h-[500px] mb-16" style="background-image: url('https://readdy.ai/api/search-image?query=artistic%20workspace%20with%20paint%20brushes%2C%20watercolors%2C%20and%20art%20supplies%20on%20a%20wooden%20desk%20with%20soft%20natural%20light%20coming%20through%20a%20window%2C%20creating%20a%20dreamy%20and%20inspirational%20atmosphere%2C%20pastel%20colors%2C%20artistic%20mood&width=1920&height=800&seq=1&orientation=landscape'); background-size: cover; background-position: center;">
+<div class="absolute inset-0 bg-black bg-opacity-40"></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="text-center px-4 fade-in">
+<h1 class="text-4xl md:text-5xl lg:text-6xl font-semibold text-white mb-4">Welcome to My Art Portfolio</h1>
+<p class="text-xl text-white mb-8 max-w-2xl mx-auto">Exploring emotions and stories through colors and shapes</p>
+<a href="#gallery" class="bg-primary text-gray-800 px-8 py-3 rounded-button font-medium hover:bg-opacity-90 transition-colors whitespace-nowrap">Explore My Work</a>
+</div>
+</div>
+</div>
+<!-- Featured Works -->
+<div class="container mx-auto px-4">
+<h2 class="text-3xl font-semibold text-center mb-12 fade-in">Featured Artworks</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+<div class="gallery-item shadow-md fade-in">
+<img src="https://readdy.ai/api/search-image?query=watercolor%20painting%20of%20a%20dreamy%20forest%20landscape%20with%20soft%20pastel%20colors%2C%20misty%20atmosphere%2C%20ethereal%20light%20filtering%20through%20trees%2C%20professional%20artwork%20with%20fine%20details%20and%20artistic%20composition&width=600&height=800&seq=2&orientation=portrait" alt="Forest Dreams" class="w-full h-80 object-cover object-top">
+<div class="gallery-overlay">
+<h3 class="text-white text-lg font-medium">Forest Dreams</h3>
+<p class="text-white text-sm">Watercolor on paper</p>
+</div>
+</div>
+<div class="gallery-item shadow-md fade-in">
+<img src="https://readdy.ai/api/search-image?query=abstract%20portrait%20painting%20with%20vibrant%20colors%20and%20emotional%20expression%2C%20modern%20art%20style%20with%20brush%20strokes%20visible%2C%20professional%20artwork%20with%20artistic%20composition%20and%20depth%2C%20gallery%20quality&width=600&height=800&seq=3&orientation=portrait" alt="Abstract Portrait" class="w-full h-80 object-cover object-top">
+<div class="gallery-overlay">
+<h3 class="text-white text-lg font-medium">Inner Reflection</h3>
+<p class="text-white text-sm">Acrylic on canvas</p>
+</div>
+</div>
+<div class="gallery-item shadow-md fade-in">
+<img src="https://readdy.ai/api/search-image?query=detailed%20pencil%20sketch%20of%20an%20urban%20cityscape%20with%20intricate%20architectural%20details%2C%20professional%20drawing%20with%20perfect%20perspective%20and%20shading%2C%20artistic%20composition%20with%20high%20contrast%2C%20gallery%20quality%20artwork&width=600&height=800&seq=4&orientation=portrait" alt="Urban Sketch" class="w-full h-80 object-cover object-top">
+<div class="gallery-overlay">
+<h3 class="text-white text-lg font-medium">Urban Whispers</h3>
+<p class="text-white text-sm">Graphite on paper</p>
+</div>
+</div>
+</div>
+<div class="text-center fade-in">
+<a href="#gallery" class="bg-white border border-primary text-gray-800 px-8 py-3 rounded-button font-medium hover:bg-primary transition-colors whitespace-nowrap">View Gallery</a>
+</div>
+</div>
+</section>
+<!-- Gallery Section -->
+<section id="gallery" class="py-16 bg-white">
+<div class="container mx-auto px-4">
+<h2 class="text-3xl font-semibold text-center mb-6 fade-in">Gallery</h2>
+<p class="text-center text-gray-600 max-w-2xl mx-auto mb-12 fade-in">Explore my collection of artworks spanning various styles, techniques, and inspirations.</p>
+<!-- Gallery Filters -->
+<div class="flex justify-center mb-8 fade-in">
+<div class="inline-flex bg-gray-100 p-1 rounded-full">
+<button class="filter-btn active px-6 py-2 rounded-full bg-primary text-gray-800 font-medium whitespace-nowrap" data-filter="all">All</button>
+<button class="filter-btn px-6 py-2 rounded-full text-gray-600 font-medium whitespace-nowrap" data-filter="paintings">Paintings</button>
+<button class="filter-btn px-6 py-2 rounded-full text-gray-600 font-medium whitespace-nowrap" data-filter="digital">Digital</button>
+<button class="filter-btn px-6 py-2 rounded-full text-gray-600 font-medium whitespace-nowrap" data-filter="sketches">Sketches</button>
+</div>
+</div>
+<!-- Gallery Grid -->
+<div class="gallery-grid fade-in">
+<div class="gallery-item shadow-md" data-category="paintings">
+<img src="https://readdy.ai/api/search-image?query=watercolor%20painting%20of%20a%20serene%20beach%20sunset%20with%20vibrant%20orange%20and%20pink%20sky%2C%20calm%20ocean%20waves%2C%20professional%20artwork%20with%20soft%20brushstrokes%20and%20dreamy%20atmosphere%2C%20gallery%20quality&width=600&height=450&seq=5&orientation=landscape" alt="Sunset Serenity" class="w-full h-64 object-cover object-top">
+<div class="gallery-overlay">
+<h3 class="text-white text-lg font-medium">Sunset Serenity</h3>
+<p class="text-white text-sm">Watercolor on paper</p>
+</div>
+</div>
+<div class="gallery-item shadow-md" data-category="digital">
+<img src="https://readdy.ai/api/search-image?query=digital%20art%20illustration%20of%20a%20fantastical%20creature%20in%20a%20magical%20forest%2C%20vibrant%20colors%20with%20glowing%20elements%2C%20professional%20digital%20painting%20with%20detailed%20textures%20and%20lighting%20effects%2C%20artistic%20composition&width=600&height=800&seq=6&orientation=portrait" alt="Mystic Creature" class="w-full h-64 object-cover object-top">
+<div class="gallery-overlay">
+<h3 class="text-white text-lg font-medium">Mystic Creature</h3>
+<p class="text-white text-sm">Digital painting</p>
+</div>
+</div>
+<div class="gallery-item shadow-md" data-category="sketches">
+<img src="https://readdy.ai/api/search-image?query=detailed%20pencil%20sketch%20of%20an%20old%20tree%20with%20intricate%20bark%20texture%20and%20twisted%20branches%2C%20professional%20drawing%20with%20perfect%20shading%20and%20depth%2C%20artistic%20composition%20with%20high%20contrast%2C%20gallery%20quality%20artwork&width=600&height=450&seq=7&orientation=landscape" alt="Ancient Oak" class="w-full h-64 object-cover object-top">
+<div class="gallery-overlay">
+<h3 class="text-white text-lg font-medium">Ancient Oak</h3>
+<p class="text-white text-sm">Graphite on paper</p>
+</div>
+</div>
+<div class="gallery-item shadow-md" data-category="paintings">
+<img src="https://readdy.ai/api/search-image?query=oil%20painting%20of%20a%20colorful%20flower%20garden%20with%20impressionist%20style%2C%20vibrant%20colors%20and%20visible%20brush%20strokes%2C%20professional%20artwork%20with%20artistic%20composition%20and%20depth%2C%20gallery%20quality&width=600&height=450&seq=8&orientation=landscape" alt="Garden Dreams" class="w-full h-64 object-cover object-top">
+<div class="gallery-overlay">
+<h3 class="text-white text-lg font-medium">Garden Dreams</h3>
+<p class="text-white text-sm">Oil on canvas</p>
+</div>
+</div>
+<div class="gallery-item shadow-md" data-category="digital">
+<img src="https://readdy.ai/api/search-image?query=digital%20concept%20art%20of%20a%20futuristic%20cityscape%20with%20towering%20buildings%20and%20flying%20vehicles%2C%20professional%20digital%20painting%20with%20detailed%20architecture%20and%20lighting%20effects%2C%20artistic%20sci-fi%20composition&width=600&height=450&seq=9&orientation=landscape" alt="Future City" class="w-full h-64 object-cover object-top">
+<div class="gallery-overlay">
+<h3 class="text-white text-lg font-medium">Future City</h3>
+<p class="text-white text-sm">Digital concept art</p>
+</div>
+</div>
+<div class="gallery-item shadow-md" data-category="sketches">
+<img src="https://readdy.ai/api/search-image?query=detailed%20charcoal%20portrait%20drawing%20of%20an%20elderly%20person%20with%20expressive%20wrinkles%20and%20emotional%20eyes%2C%20professional%20artwork%20with%20perfect%20shading%20and%20texture%2C%20artistic%20composition%20with%20dramatic%20lighting%2C%20gallery%20quality&width=600&height=800&seq=10&orientation=portrait" alt="Wisdom Lines" class="w-full h-64 object-cover object-top">
+<div class="gallery-overlay">
+<h3 class="text-white text-lg font-medium">Wisdom Lines</h3>
+<p class="text-white text-sm">Charcoal on paper</p>
+</div>
+</div>
+<div class="gallery-item shadow-md" data-category="paintings">
+<img src="https://readdy.ai/api/search-image?query=abstract%20acrylic%20painting%20with%20bold%20colors%20and%20geometric%20shapes%2C%20modern%20art%20style%20with%20thick%20paint%20application%2C%20professional%20artwork%20with%20artistic%20composition%20and%20balance%2C%20gallery%20quality&width=600&height=450&seq=11&orientation=landscape" alt="Geometric Harmony" class="w-full h-64 object-cover object-top">
+<div class="gallery-overlay">
+<h3 class="text-white text-lg font-medium">Geometric Harmony</h3>
+<p class="text-white text-sm">Acrylic on canvas</p>
+</div>
+</div>
+<div class="gallery-item shadow-md" data-category="digital">
+<img src="https://readdy.ai/api/search-image?query=digital%20illustration%20of%20a%20fantasy%20character%20with%20detailed%20armor%20and%20magical%20elements%2C%20professional%20digital%20painting%20with%20intricate%20details%20and%20lighting%20effects%2C%20artistic%20character%20design&width=600&height=800&seq=12&orientation=portrait" alt="Guardian Spirit" class="w-full h-64 object-cover object-top">
+<div class="gallery-overlay">
+<h3 class="text-white text-lg font-medium">Guardian Spirit</h3>
+<p class="text-white text-sm">Digital illustration</p>
+</div>
+</div>
+<div class="gallery-item shadow-md" data-category="sketches">
+<img src="https://readdy.ai/api/search-image?query=detailed%20ink%20drawing%20of%20an%20animal%20with%20intricate%20patterns%20and%20textures%2C%20professional%20artwork%20with%20fine%20linework%20and%20stippling%20technique%2C%20artistic%20composition%20with%20balance%20and%20flow%2C%20gallery%20quality&width=600&height=450&seq=13&orientation=landscape" alt="Wild Patterns" class="w-full h-64 object-cover object-top">
+<div class="gallery-overlay">
+<h3 class="text-white text-lg font-medium">Wild Patterns</h3>
+<p class="text-white text-sm">Ink on paper</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- About Section -->
+<section id="about" class="py-16 bg-gray-50">
+<div class="container mx-auto px-4">
+<h2 class="text-3xl font-semibold text-center mb-16 fade-in">About Me</h2>
+<div class="flex flex-col md:flex-row gap-12 items-center mb-16">
+<div class="w-full md:w-1/3 fade-in">
+<img src="https://static.readdy.ai/image/242602d7ded5e828096ad2dc7a2c7d20/42115eae38bbbf2adb48ab981c961499.jpeg" alt="Nitesh Yadav - Artist Portrait" class="w-full h-auto rounded-lg shadow-md">
+</div>
+<div class="w-full md:w-2/3 fade-in">
+<h3 class="text-2xl font-medium mb-4">Hello, I'm Nitesh Yadav</h3>
+<p class="text-gray-700 mb-4">I'm a visual artist from Modinagar, deeply passionate about expressing stories through digital and charcoal art. My journey with art began in childhood, and since then, it has become a powerful way for me to share my thoughts, emotions, and imagination with the world.</p>
+<p class="text-gray-700 mb-4">Much of my inspiration comes from dreams—those strange, vivid moments that live between sleep and reality. I love turning those abstract ideas into powerful visual pieces that invite viewers to explore their own imagination and connect with the artwork on a personal level.</p>
+<p class="text-gray-700">Through my art, I strive to create a bridge between the conscious and subconscious, bringing dreamlike elements into reality through careful attention to detail and emotional depth in every piece I create.</p>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12">
+<div class="bg-white p-8 rounded-lg shadow-sm fade-in">
+<div class="w-12 h-12 bg-primary rounded-full flex items-center justify-center mb-6">
+<i class="ri-heart-line ri-lg text-gray-800"></i>
+</div>
+<h3 class="text-xl font-medium mb-4">What Inspires Me</h3>
+<p class="text-gray-700 mb-3">My art is deeply influenced by:</p>
+<ul class="text-gray-700 space-y-2">
+<li class="flex items-start">
+<div class="w-5 h-5 flex items-center justify-center mr-2 mt-1">
+<i class="ri-check-line text-primary"></i>
+</div>
+<span>The ever-changing moods of nature and landscapes</span>
+</li>
+<li class="flex items-start">
+<div class="w-5 h-5 flex items-center justify-center mr-2 mt-1">
+<i class="ri-check-line text-primary"></i>
+</div>
+<span>Human emotions and the complexity of relationships</span>
+</li>
+<li class="flex items-start">
+<div class="w-5 h-5 flex items-center justify-center mr-2 mt-1">
+<i class="ri-check-line text-primary"></i>
+</div>
+<span>Urban environments and architectural elements</span>
+</li>
+<li class="flex items-start">
+<div class="w-5 h-5 flex items-center justify-center mr-2 mt-1">
+<i class="ri-check-line text-primary"></i>
+</div>
+<span>Literature, poetry, and music that evoke strong imagery</span>
+</li>
+<li class="flex items-start">
+<div class="w-5 h-5 flex items-center justify-center mr-2 mt-1">
+<i class="ri-check-line text-primary"></i>
+</div>
+<span>The interplay of light, shadow, and color in everyday moments</span>
+</li>
+</ul>
+</div>
+<div class="bg-white p-8 rounded-lg shadow-sm fade-in">
+<div class="w-12 h-12 bg-secondary rounded-full flex items-center justify-center mb-6">
+<i class="ri-palette-line ri-lg text-gray-800"></i>
+</div>
+<h3 class="text-xl font-medium mb-4">My Art Styles & Tools</h3>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-gray-50 p-4 rounded-lg">
+<div class="w-10 h-10 flex items-center justify-center mb-3">
+<i class="ri-brush-line ri-lg text-primary"></i>
+</div>
+<h4 class="font-medium mb-2">Watercolor</h4>
+<p class="text-gray-600 text-sm">Winsor & Newton professional paints on Arches cold-pressed paper</p>
+</div>
+<div class="bg-gray-50 p-4 rounded-lg">
+<div class="w-10 h-10 flex items-center justify-center mb-3">
+<i class="ri-computer-line ri-lg text-primary"></i>
+</div>
+<h4 class="font-medium mb-2">Digital Art</h4>
+<p class="text-gray-600 text-sm">Procreate on iPad Pro with Apple Pencil and Photoshop</p>
+</div>
+<div class="bg-gray-50 p-4 rounded-lg">
+<div class="w-10 h-10 flex items-center justify-center mb-3">
+<i class="ri-pencil-line ri-lg text-primary"></i>
+</div>
+<h4 class="font-medium mb-2">Sketching</h4>
+<p class="text-gray-600 text-sm">Graphite, charcoal, and ink on various papers</p>
+</div>
+<div class="bg-gray-50 p-4 rounded-lg">
+<div class="w-10 h-10 flex items-center justify-center mb-3">
+<i class="ri-paint-brush-line ri-lg text-primary"></i>
+</div>
+<h4 class="font-medium mb-2">Acrylic</h4>
+<p class="text-gray-600 text-sm">Golden heavy body acrylics on canvas and wood panels</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Contact Section -->
+<section id="contact" class="py-16 bg-white">
+<div class="container mx-auto px-4">
+<h2 class="text-3xl font-semibold text-center mb-6 fade-in">Get in Touch</h2>
+<p class="text-center text-gray-600 max-w-2xl mx-auto mb-12 fade-in">Interested in commissioning a piece, purchasing existing artwork, or just want to say hello? I'd love to hear from you!</p>
+<div class="flex flex-col md:flex-row gap-12">
+<div class="w-full md:w-1/2 fade-in">
+<form id="contact-form" class="space-y-6">
+<div>
+<label for="name" class="block text-gray-700 mb-2">Name</label>
+<input type="text" id="name" name="name" class="border-gray-300 focus:border-primary" required>
+</div>
+<div>
+<label for="email" class="block text-gray-700 mb-2">Email</label>
+<input type="email" id="email" name="email" class="border-gray-300 focus:border-primary" required>
+</div>
+<div>
+<label for="subject" class="block text-gray-700 mb-2">Subject</label>
+<input type="text" id="subject" name="subject" class="border-gray-300 focus:border-primary" required>
+</div>
+<div>
+<label for="message" class="block text-gray-700 mb-2">Message</label>
+<textarea id="message" name="message" rows="5" class="border-gray-300 focus:border-primary" required></textarea>
+</div>
+<div>
+<label class="custom-checkbox">
+<input type="checkbox" required>
+<span class="checkmark"></span>
+<span class="text-gray-700">I agree to the privacy policy</span>
+</label>
+</div>
+<div>
+<button type="submit" class="bg-primary text-gray-800 px-8 py-3 rounded-button font-medium hover:bg-opacity-90 transition-colors whitespace-nowrap w-full md:w-auto">Send Message</button>
+</div>
+</form>
+</div>
+<div class="w-full md:w-1/2 fade-in">
+<div class="bg-gray-50 p-8 rounded-lg h-full">
+<h3 class="text-xl font-medium mb-6">Connect With Me</h3>
+<div class="space-y-6">
+<div class="flex items-start">
+<div class="w-10 h-10 bg-primary bg-opacity-20 rounded-full flex items-center justify-center mr-4">
+<i class="ri-mail-line text-primary"></i>
+</div>
+<div>
+<h4 class="font-medium text-gray-800">Email</h4>
+<p class="text-gray-600">niteshyadav1038@gmail.com</p>
+</div>
+</div>
+<div class="flex items-start">
+<div class="w-10 h-10 bg-primary bg-opacity-20 rounded-full flex items-center justify-center mr-4">
+<i class="ri-map-pin-line text-primary"></i>
+</div>
+<div>
+<h4 class="font-medium text-gray-800">Studio Location</h4>
+<p class="text-gray-600">Modinagar<br>Delhi NCR</p>
+</div>
+</div>
+<div class="flex items-start">
+<div class="w-10 h-10 bg-primary bg-opacity-20 rounded-full flex items-center justify-center mr-4">
+<i class="ri-time-line text-primary"></i>
+</div>
+<div>
+<h4 class="font-medium text-gray-800">Studio Hours</h4>
+<p class="text-gray-600">Tuesday - Saturday<br>10:00 AM - 6:00 PM</p>
+</div>
+</div>
+</div>
+<div class="mt-8">
+<h4 class="font-medium text-gray-800 mb-4">Follow Me</h4>
+<div class="flex space-x-4">
+<a href="#" class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm hover:bg-gray-100 transition-colors">
+<i class="ri-instagram-line text-gray-700"></i>
+</a>
+<a href="#" class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm hover:bg-gray-100 transition-colors">
+<i class="ri-behance-line text-gray-700"></i>
+</a>
+<a href="#" class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm hover:bg-gray-100 transition-colors">
+<i class="ri-pinterest-line text-gray-700"></i>
+</a>
+<a href="#" class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm hover:bg-gray-100 transition-colors">
+<i class="ri-dribbble-line text-gray-700"></i>
+</a>
+<a href="#" class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm hover:bg-gray-100 transition-colors">
+<i class="ri-youtube-line text-gray-700"></i>
+</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="bg-gray-900 text-white py-12">
+<div class="container mx-auto px-4">
+<div class="flex flex-col md:flex-row justify-between items-center mb-8">
+<a href="#" class="text-2xl font-['Pacifico'] text-white mb-4 md:mb-0">logo</a>
+<nav class="flex flex-wrap justify-center gap-x-8 gap-y-2">
+<a href="#home" class="text-gray-300 hover:text-white transition-colors">Home</a>
+<a href="#gallery" class="text-gray-300 hover:text-white transition-colors">Gallery</a>
+<a href="#about" class="text-gray-300 hover:text-white transition-colors">About</a>
+<a href="#contact" class="text-gray-300 hover:text-white transition-colors">Contact</a>
+</nav>
+</div>
+<hr class="border-gray-800 mb-8">
+<div class="flex flex-col md:flex-row justify-between items-center">
+<p class="text-gray-400 text-sm mb-4 md:mb-0">&copy; 2025 Nitesh Yadav Art. All rights reserved.</p>
+<div class="flex space-x-4">
+<a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Privacy Policy</a>
+<a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Terms of Service</a>
+</div>
+</div>
+</div>
+</footer>
+<!-- Image Modal -->
+<div id="imageModal" class="modal">
+<span class="modal-close">&times;</span>
+<img class="modal-content" id="modalImage">
+<div id="modalCaption" class="text-white text-center mt-4 text-lg"></div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+// Mobile menu toggle
+const menuToggle = document.getElementById('menu-toggle');
+const mobileMenu = document.getElementById('mobile-menu');
+menuToggle.addEventListener('click', function() {
+mobileMenu.classList.toggle('hidden');
+if (mobileMenu.classList.contains('hidden')) {
+menuToggle.innerHTML = '<i class="ri-menu-line ri-lg"></i>';
+} else {
+menuToggle.innerHTML = '<i class="ri-close-line ri-lg"></i>';
+}
+});
+// Smooth scrolling for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+anchor.addEventListener('click', function(e) {
+e.preventDefault();
+const targetId = this.getAttribute('href');
+const targetElement = document.querySelector(targetId);
+if (targetElement) {
+window.scrollTo({
+top: targetElement.offsetTop - 80,
+behavior: 'smooth'
+});
+// Close mobile menu if open
+if (!mobileMenu.classList.contains('hidden')) {
+mobileMenu.classList.add('hidden');
+menuToggle.innerHTML = '<i class="ri-menu-line ri-lg"></i>';
+}
+}
+});
+});
+});
+document.addEventListener('DOMContentLoaded', function() {
+// Gallery filtering
+const filterButtons = document.querySelectorAll('.filter-btn');
+const galleryItems = document.querySelectorAll('.gallery-item');
+filterButtons.forEach(button => {
+button.addEventListener('click', function() {
+// Remove active class from all buttons
+filterButtons.forEach(btn => {
+btn.classList.remove('active', 'bg-primary', 'text-gray-800');
+btn.classList.add('text-gray-600');
+});
+// Add active class to clicked button
+this.classList.add('active', 'bg-primary', 'text-gray-800');
+this.classList.remove('text-gray-600');
+const filter = this.getAttribute('data-filter');
+galleryItems.forEach(item => {
+if (filter === 'all' || item.getAttribute('data-category') === filter) {
+item.style.display = 'block';
+} else {
+item.style.display = 'none';
+}
+});
+});
+});
+});
+document.addEventListener('DOMContentLoaded', function() {
+// Image modal functionality
+const modal = document.getElementById('imageModal');
+const modalImg = document.getElementById('modalImage');
+const modalCaption = document.getElementById('modalCaption');
+const closeBtn = document.getElementsByClassName('modal-close')[0];
+// Get all gallery items
+const galleryItems = document.querySelectorAll('.gallery-item');
+galleryItems.forEach(item => {
+item.addEventListener('click', function() {
+modal.style.display = 'flex';
+const img = this.querySelector('img');
+const title = this.querySelector('h3').textContent;
+const description = this.querySelector('p').textContent;
+modalImg.src = img.src;
+modalCaption.innerHTML = `<div class="font-medium">${title}</div><div class="text-sm mt-1">${description}</div>`;
+// Prevent body scrolling when modal is open
+document.body.style.overflow = 'hidden';
+});
+});
+// Close modal
+closeBtn.addEventListener('click', function() {
+modal.style.display = 'none';
+document.body.style.overflow = 'auto';
+});
+// Close modal when clicking outside the image
+modal.addEventListener('click', function(e) {
+if (e.target === modal) {
+modal.style.display = 'none';
+document.body.style.overflow = 'auto';
+}
+});
+});
+document.addEventListener('DOMContentLoaded', function() {
+// Form submission
+const contactForm = document.getElementById('contact-form');
+contactForm.addEventListener('submit', function(e) {
+e.preventDefault();
+// Get form values
+const name = document.getElementById('name').value;
+const email = document.getElementById('email').value;
+const subject = document.getElementById('subject').value;
+const message = document.getElementById('message').value;
+// Here you would normally send the form data to a server
+// For demo purposes, we'll just show a success message
+// Clear form
+contactForm.reset();
+// Show success message (you can customize this)
+alert(`Thank you, ${name}! Your message has been sent successfully. I'll get back to you soon.`);
+});
+});
+document.addEventListener('DOMContentLoaded', function() {
+// Fade-in animation on scroll
+const fadeElements = document.querySelectorAll('.fade-in');
+function checkFade() {
+fadeElements.forEach(element => {
+const elementTop = element.getBoundingClientRect().top;
+const elementBottom = element.getBoundingClientRect().bottom;
+const windowHeight = window.innerHeight;
+if (elementTop < windowHeight - 100 && elementBottom > 0) {
+element.classList.add('visible');
+}
+});
+}
+// Initial check
+checkFade();
+// Check on scroll
+window.addEventListener('scroll', checkFade);
+});
+</script>
+</body>
+</html>
